@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timers & Clock</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            margin-top: 20px;
+            color: #333;
+        }
+        .timer {
+            margin: 20px;
+            font-size: 2em;
+            color: #007BFF;
+        }
+    </style>
+</head>
+<body>
+    <h1>System Timer, Live Clock, and Basic Timer</h1>
+
+    <!-- System Runtime Timer -->
+    <div>
+        <h2>System Runtime Timer</h2>
+        <p class="timer" id="runtime-timer">Loading...</p>
+    </div>
+
+    <!-- Live Clock -->
+    <div>
+        <h2>Live Clock</h2>
+        <p class="timer" id="live-clock">Loading...</p>
+    </div>
+
+    <!-- Basic Timer -->
+    <div>
+        <h2>Basic Timer</h2>
+        <p class="timer" id="basic-timer">0</p>
+        <button onclick="startBasicTimer()">Start</button>
+        <button onclick="stopBasicTimer()">Stop</button>
+        <button onclick="resetBasicTimer()">Reset</button>
+    </div>
+
+    <script>
+        // 1. System Runtime Timer
+        let startTime = Date.now();
+        function updateSystemTimer() {
+            let now = Date.now();
+            let elapsed = Math.floor((now - startTime) / 1000); // Elapsed time in seconds
+            document.getElementById("runtime-timer").innerText = `${elapsed} seconds`;
+        }
+        setInterval(updateSystemTimer, 1000);
+
+        // 2. Live Clock
+        function updateLiveClock() {
+            let now = new Date();
+            let hours = String(now.getHours()).padStart(2, '0');
+            let minutes = String(now.getMinutes()).padStart(2, '0');
+            let seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById("live-clock").innerText = `${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateLiveClock, 1000);
+
+        // 3. Basic Timer (Stopwatch)
+        let basicTimerInterval;
+        let basicTimerCount = 0;
+
+        function startBasicTimer() {
+            if (!basicTimerInterval) {
+                basicTimerInterval = setInterval(() => {
+                    basicTimerCount++;
+                    document.getElementById("basic-timer").innerText = basicTimerCount;
+                }, 1000);
+            }
+        }
+
+        function stopBasicTimer() {
+            clearInterval(basicTimerInterval);
+            basicTimerInterval = null;
+        }
+
+        function resetBasicTimer() {
+            stopBasicTimer();
+            basicTimerCount = 0;
+            document.getElementById("basic-timer").innerText = basicTimerCount;
+        }
+
+        // Initialize clocks
+        updateSystemTimer();
+        updateLiveClock();
+    </script>
+</body>
+</html>
