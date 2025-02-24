@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-Function Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: black;
+            color: white;
+        }
+        .clock, .stopwatch, .timer {
+            margin: 20px;
+            font-size: 2em;
+        }
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 1em;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: gray;
+        }
+        #laps, #timerInput {
+            margin-top: 10px;
+            text-align: left;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <h1>Multi-Function Timer</h1>
+    
+    <div class="clock">
+        <h2>Live Local Clock</h2>
+        <p id="liveClock">--:--:--</p>
+    </div>
+    
+    <div class="stopwatch">
+        <h2>Stopwatch</h2>
+        <p id="stopwatch">00:00:00</p>
+        <button onclick="startStopwatch()">Start</button>
+        <button onclick="pauseStopwatch()">Pause</button>
+        <button onclick="resetStopwatch()">Reset</button>
+        <button onclick="lapStopwatch()">Lap</button>
+        <div id="laps"></div>
+    </div>
+    
+    <div class="timer">
+        <h2>Timer</h2>
+        <p id="timerDisplay">00:00:00</p>
+        <input type="number" id="timerInput" placeholder="Enter seconds" min="0">
+        <button onclick="startTimer()">Start</button>
+        <button onclick="pauseTimer()">Pause</button>
+        <button onclick="resetTimer()">Reset</button>
+    </div>
+    
+    <script>
+        // Live Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById("liveClock").textContent = now.toLocaleTimeString();
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Stopwatch
+        let startTime, updatedTime, difference, tInterval;
+        let running = false, laps = 1;
+        function startStopwatch() {
+            if (!running) {
+                startTime = new Date().getTime() - (difference || 0);
+                tInterval = setInterval(runStopwatch, 10);
+                running = true;
+            }
+        }
+        function runStopwatch() {
+            updatedTime = new Date().getTime();
+            difference = updatedTime - startTime;
+            let minutes = Math.floor(difference / (1000 * 60));
+            let seconds = Math.floor((difference % (1000 * 60)) / 1000);
+            let milliseconds = Math.floor((difference % 1000) / 10);
+            document.getElementById("stopwatch").textContent = 
+                (minutes < 10 ? "0" : "") + minutes + ":" +
+                (seconds < 10 ? "0" : "") + seconds + ":" +
+                (milliseconds < 10 ? "0" : "") + milliseconds;
+        }
+        function pauseStopwatch() {
+            clearInterval(tInterval);
+            running = false;
+        }
+        function resetStopwatch() {
+            clearInterval(tInterval);
+            running = false;
+            difference = 0;
+            document.getElementById("stopwatch").textContent = "00:00:00";
+            document.getElementById("laps").innerHTML = "";
+            laps = 1;
+        }
+        function lapStopwatch() {
+            if (running) {
+                let lapTime = document.getElementById("stopwatch").textContent;
+                let lapRecord = document.createElement("p");
+                lapRecord.textContent = `Lap ${laps}: ${lapTime}`;
+                document.getElementById("laps").appendChild(lapRecord);
+                laps++;
+            }
+        }
+
+        // Timer
+        let timerTime, timerInterval, timerRunning = false;
+        function startTimer() {
+            if (!timerRunning) {
+                let inputSeconds = document.getElementById("timerInput").value;
+                if (inputSeconds && !timerTime) {
+                    timerTime = inputSeconds * 1000;
+                }
+                timerInterval = setInterval(runTimer, 1000);
+                timerRunning = true;
+            }
+        }
+        function runTimer() {
+            if (timerTime > 0) {
+                timerTime -= 1000;
+                let minutes = Math.floor(timerTime / (1000 * 60));
+                let seconds = Math.floor((timerTime % (1000 * 60)) / 1000);
+                document.getElementById("timerDisplay").textContent = 
+                    (minutes < 10 ? "0" : "") + minutes + ":" +
+                    (seconds < 10 ? "0" : "") + seconds + ":00";
+            } else {
+                clearInterval(timerInterval);
+                timerRunning = false;
+                alert("Time's up!");
+            }
+        }
+        function pauseTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+        }
+        function resetTimer() {
+            clearInterval(timerInterval);
+            timerRunning = false;
+            timerTime = 0;
+            document.getElementById("timerDisplay").textContent = "00:00:00";
+            document.getElementById("timerInput").value = "";
+        }
+    </script>
+</body>
+</html>
+
